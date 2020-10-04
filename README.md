@@ -117,3 +117,18 @@ gradle clean build bootRun
   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3Vlem9yZy5jbCIsImV4cCI6MTYwMTc3OTUwNX0.5Lm353B6_9rpgNd19am7lky9WMcmvDtictPlbWmcvJcUoGD7nQik-Dz_uXb_ymnVq_F7Z_2BV8GmXitQUotEcQ"
 }
 ```
+
+###### Error
+```json
+{
+  "errors": [
+    {
+      "timestamp": "2020-10-04 22:45:05",
+      "status": 500,
+      "title": "Internal Server Error",
+      "detail": "[Error] El correo ya está registrado",
+      "source": "uri=/user/sign-up"
+    }
+  ]
+}
+```

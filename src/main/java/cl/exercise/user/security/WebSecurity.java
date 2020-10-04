@@ -1,7 +1,6 @@
 package cl.exercise.user.security;
 
 import static cl.exercise.user.security.JWTConstants.SIGN_UP_URL;
-import static cl.exercise.user.security.JWTConstants.USER_UPDATE_INFO_URL;
 
 import cl.exercise.user.repository.UserRepository;
 import lombok.SneakyThrows;
@@ -36,7 +35,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
   @SneakyThrows
   @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  protected void configure(HttpSecurity http) {
     http.cors()
         .and()
         .csrf()
@@ -58,7 +57,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
   @SneakyThrows
   @Override
-  public void configure(AuthenticationManagerBuilder auth) throws Exception {
+  public void configure(AuthenticationManagerBuilder auth) {
     auth.authenticationProvider(new CustomAuthenticationProvider(userRepository));
     auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
   }

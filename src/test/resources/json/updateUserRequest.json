@@ -1,0 +1,17 @@
+{
+  "name": "Juan Rodriguez",
+  "email": "juan@rodriguezorg.cl",
+  "password": "ssT4S@Aww4",
+  "phones": [
+    {
+      "number": "1234567",
+      "citycode": "17",
+      "countrycode": "7"
+    },
+    {
+      "number": "999999999",
+      "citycode": "2",
+      "countrycode": "56"
+    }
+  ]
+}
