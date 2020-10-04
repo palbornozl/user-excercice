@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  user:
+    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DB_URL: ${DB_URL}
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+        DB_DIALECT: ${DB_DIALECT}
+        DB_DRIVER: ${DB_DRIVER}
+        LOG_LEVEL: ${LOG_LEVEL}
+    ports:
+      - "8098:8098"
