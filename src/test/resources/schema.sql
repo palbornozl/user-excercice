@@ -6,10 +6,10 @@ CREATE TABLE IF NOT EXISTS EXERCISE.TBL_USER
     name       varchar(250) not null,
     email      varchar(100) not null,
     password   varchar(16)  not null,
-    token      varchar(200) not null,
+    token      text         not null,
     is_active  boolean               default true,
-    created_at timestamp             default current_timestamp(),
-    last_login timestamp             default current_timestamp(),
+    created_at timestamp,
+    last_login timestamp,
     modified   timestamp
 );
 

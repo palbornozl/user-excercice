@@ -1,4 +1,4 @@
-# user-excercice
+# user-excercise
 
 ### Base de Datos
 El resultado es almacenado en una base de datos relacional embebida (H2), cuya tabla debe ser:
@@ -13,9 +13,9 @@ El resultado es almacenado en una base de datos relacional embebida (H2), cuya t
 |email      |varchar(100) not null
 |password   |varchar(16)  not null
 |token      |varchar(200) not null
-|is_active  |boolean      not null default true
-|created_at |timestamp    not null default current_timestamp()
-|updated_at |timestamp    not null default current_timestamp()
+|is_active  |boolean      default true
+|created_at |timestamp    
+|updated_at |timestamp    
 |modified   |timestamp    
 
 *Schema*: exercise
@@ -60,12 +60,14 @@ gradle clean build bootRun
 
 #### Contratos
 ##### IN
+- Obligatorios: name, email, password
+- Opcional: phones *en caso de enviarlo todos los campos son obligatorios*
 ```json
 {
-  "name": "Juan Rodriguez", //obligatorio
-  "email": "juan@rodriguezorg.cl", //obligatorio
-  "password": "ssT4S@Aww4", //obligatorio
-  "phones": [ //opcional, en caso de enviarlo todos los campos son obligatorios
+  "name": "Juan Rodriguez",
+  "email": "juan@rodriguezorg.cl",
+  "password": "ssT4S@Aww4",
+  "phones": [
     {
       "number": "1234567",
       "citycode": "1",
