@@ -1,5 +1,15 @@
 # user-excercise
 
+- Java jdk1.8.0_265
+- Gradle 6.6.1
+- Docker Engine v19.03.13
+
+#### Diagramas
+En carpeta diagrams:
+- Diagrama de Clases
+- Diagramas de Paquetes
+- Diagrama de Secuencias
+
 ### Base de Datos
 El resultado es almacenado en una base de datos relacional embebida (H2), cuya tabla debe ser:
 
