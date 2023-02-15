@@ -5,7 +5,6 @@ import static cl.exercise.user.utils.Utils.mapToJson;
 import static cl.exercise.user.utils.Utils.readFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cl.exercise.user.dto.UserDTO;
 import cl.exercise.user.dto.UserResponse;
