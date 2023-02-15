@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,7 +73,7 @@ public class UserController {
   }
 
   @SneakyThrows
-  @PostMapping("/in/update")
+  @PutMapping("/in/update")
   public ResponseEntity<UserResponse> update(
       @Valid @RequestBody UserDTO request,
       BindingResult result,

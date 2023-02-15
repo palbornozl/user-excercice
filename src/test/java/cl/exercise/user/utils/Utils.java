@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import lombok.SneakyThrows;
 
 public class Utils {
@@ -34,9 +35,9 @@ public class Utils {
     return jsonNode;
   }
 
-  @SneakyThrows
-  public static JsonNode readFile(String fileName, ClassLoader classLoader) {
-    File file = new File(classLoader.getResource("json/" + fileName + ".json").getFile());
+  public static JsonNode readFile(String fileName, ClassLoader classLoader) throws IOException{
+    File file = new File(
+        Objects.requireNonNull(classLoader.getResource("json/" + fileName + ".json")).getFile());
     return removeUserPhoneDTO(file);
   }
 }
