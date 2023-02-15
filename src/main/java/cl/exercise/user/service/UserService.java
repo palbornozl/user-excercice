@@ -13,11 +13,11 @@ import cl.exercise.user.repository.UserRepository;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -29,15 +29,11 @@ public class UserService {
 
   private final UserPhoneRepository userPhoneRepository;
 
-  private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
   public UserService(
       UserRepository userRepository,
-      UserPhoneRepository userPhoneRepository,
-      BCryptPasswordEncoder bCryptPasswordEncoder) {
+      UserPhoneRepository userPhoneRepository) {
     this.userRepository = userRepository;
     this.userPhoneRepository = userPhoneRepository;
-    this.bCryptPasswordEncoder = bCryptPasswordEncoder;
   }
 
   @SneakyThrows
@@ -59,7 +55,8 @@ public class UserService {
       saveUserPhoneInfo(request.getUserPhoneDTO(), userId);
     }
 
-    UserEntity userEntity = userRepository.findById(userId).get();
+    Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
+    UserEntity userEntity = userEntityOptional.orElseThrow(NullPointerException::new);
     return generateResponse(userEntity);
   }
 
@@ -91,14 +88,15 @@ public class UserService {
 
     List<UserPhoneEntity> phoneEntities = userPhoneRepository.findByIdUser(userEntity.getId());
     if (!CollectionUtils.isEmpty(phoneEntities)) {
-      log.info("--> delete phone {}", phoneEntities.toString());
+      log.info("--> delete phone {}", phoneEntities);
       userPhoneRepository.deleteByIdUser(userEntity.getId());
     }
     if (!CollectionUtils.isEmpty(request.getUserPhoneDTO())) {
       log.info("--> saving phone {}", request.getUserPhoneDTO().toString());
       saveUserPhoneInfo(request.getUserPhoneDTO(), userEntity.getId());
     }
-    return generateResponse(userRepository.findById(userEntity.getId()).get());
+    Optional<UserEntity> userEntityOptional = userRepository.findById(userEntity.getId());
+    return generateResponse(userEntityOptional.orElseThrow(NullPointerException::new));
   }
 
   @Transactional

@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(transactionManager = "transactionManagerUser")
 public class UserController {
 
+  public static final String RESPONSE_RESULTS_STG = "Response results: {}";
+  public static final String ERROR_STG = "[Error] ";
   private final UserService service;
 
   public UserController(UserService service) {
@@ -37,9 +39,9 @@ public class UserController {
   public ResponseEntity<UserResponse> signUp(
       @Valid @RequestBody UserDTO request, BindingResult result) {
     if (result.hasErrors()) {
-      log.error("Validation problems [sign-up]... {}", result.getAllErrors().toString());
+      log.error("Validation problems [sign-up]... {}", result.getAllErrors());
       throw new IllegalArgumentException(
-          "[Error] " + result.getAllErrors().get(0).getDefaultMessage());
+          ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
     }
 
     if (service.findUserByEmail(request.getUserEmail()) != null) {
@@ -48,9 +50,9 @@ public class UserController {
 
     request.setUserToken(request.getUserPassword());
     UserResponse response = service.saveUser(request);
-    log.debug("Response results: {}", response.toString());
+    log.debug(RESPONSE_RESULTS_STG, response.toString());
 
-    return new ResponseEntity<>(response, response == null ? HttpStatus.NO_CONTENT : HttpStatus.OK);
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   @SneakyThrows
@@ -60,16 +62,16 @@ public class UserController {
       BindingResult result,
       @RequestHeader(value = HEADER_STRING) String token) {
     if (result.hasErrors()) {
-      log.error("Validation problems [sign-in]... {}", result.getAllErrors().toString());
+      log.error("Validation problems [sign-in]... {}", result.getAllErrors());
       throw new IllegalArgumentException(
-          "[Error] " + result.getAllErrors().get(0).getDefaultMessage());
+          ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
     }
 
     request.setUserToken(token.replace(TOKEN_PREFIX, "").trim());
     UserDTO response = service.getUserInformation(request);
-    log.debug("Response results: {}", response.toString());
+    log.debug(RESPONSE_RESULTS_STG, response.toString());
 
-    return new ResponseEntity<>(response, response == null ? HttpStatus.NO_CONTENT : HttpStatus.OK);
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   @SneakyThrows
@@ -79,15 +81,15 @@ public class UserController {
       BindingResult result,
       @RequestHeader(value = HEADER_STRING) String token) {
     if (result.hasErrors()) {
-      log.error("Validation problems [update]... {}", result.getAllErrors().toString());
+      log.error("Validation problems [update]... {}", result.getAllErrors());
       throw new IllegalArgumentException(
-          "[Error] " + result.getAllErrors().get(0).getDefaultMessage());
+          ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
     }
 
     request.setUserToken(token.replace(TOKEN_PREFIX, "").trim());
     UserResponse response = service.updateUser(request);
-    log.debug("Response results: {}", response.toString());
+    log.debug(RESPONSE_RESULTS_STG, response.toString());
 
-    return new ResponseEntity<>(response, response == null ? HttpStatus.NO_CONTENT : HttpStatus.OK);
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 }

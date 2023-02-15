@@ -17,6 +17,9 @@ public class Transformer {
 
   public static final String DATE_FORMAT_COMPLETE = "EEEE, MMMM dd, yyyy hh:mm:ss.SSS a";
 
+  Transformer() {
+  }
+
   public static List<UserPhoneDTO> phoneEntityToResponse(List<UserPhoneEntity> userPhoneEntity) {
     log.debug("--> transform phone response");
     List<UserPhoneDTO> userPhoneDTO = new LinkedList<>();

@@ -1,7 +1,6 @@
 package cl.exercise.user.security;
 
 import static cl.exercise.user.security.JWTConstants.HEADER_STRING;
-import static cl.exercise.user.security.JWTConstants.SECRET_PASSWORD;
 import static cl.exercise.user.security.JWTConstants.TOKEN_PREFIX;
 
 import com.auth0.jwt.JWT;
@@ -17,9 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+  private final String secretPassword;
 
-  public JWTAuthorizationFilter(AuthenticationManager authManager) {
+  public JWTAuthorizationFilter(AuthenticationManager authManager, String secretPassword) {
     super(authManager);
+    this.secretPassword = secretPassword;
   }
 
   @Override
@@ -44,7 +45,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     String token = request.getHeader(HEADER_STRING);
     if (token != null) {
       String user =
-          JWT.require(Algorithm.HMAC512(SECRET_PASSWORD.getBytes()))
+          JWT.require(Algorithm.HMAC512(this.secretPassword.getBytes()))
               .build()
               .verify(token.replace(TOKEN_PREFIX, ""))
               .getSubject();

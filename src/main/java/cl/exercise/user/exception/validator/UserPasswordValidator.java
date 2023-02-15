@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserPasswordValidator implements ConstraintValidator<UserPasswordConstraint, String> {
 
   @Override
-  public void initialize(UserPasswordConstraint userPasswordConstraint) {}
+  public void initialize(UserPasswordConstraint userPasswordConstraint) {
+    // nothing to do here...
+  }
 
   @Override
   @SneakyThrows

@@ -9,6 +9,9 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class ValidatorUtil {
 
+  ValidatorUtil() {
+  }
+
   @SneakyThrows
   public static boolean isValidText(String text, String regex) {
     if (StringUtils.isEmpty(text)) return false;

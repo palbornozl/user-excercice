@@ -10,7 +10,6 @@ import cl.exercise.user.dto.UserDTO;
 import cl.exercise.user.dto.UserResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
 import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 public class UserControllerTest {
   protected MockMvc mvc;
-  File file;
   @Autowired WebApplicationContext webApplicationContext;
-  private UserDTO userDTOSignUpRequest;
   private UserDTO userDTOSignInRequest;
   private UserDTO userDTOUpdateRequest;
 
@@ -47,7 +44,8 @@ public class UserControllerTest {
     ClassLoader classLoader = getClass().getClassLoader();
 
     JsonNode jsonNode = readFile("signUpRequest", classLoader);
-    userDTOSignUpRequest = new ObjectMapper().readValue(jsonNode.toPrettyString(), UserDTO.class);
+    UserDTO userDTOSignUpRequest = new ObjectMapper().readValue(jsonNode.toPrettyString(),
+        UserDTO.class);
     userDTOSignUpRequest.setUserToken(jsonNode.get("password").asText());
 
     jsonNode = readFile("signInRequest", classLoader);

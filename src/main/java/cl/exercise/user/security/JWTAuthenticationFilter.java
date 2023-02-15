@@ -2,7 +2,6 @@ package cl.exercise.user.security;
 
 import static cl.exercise.user.security.JWTConstants.EXPIRATION_TIME;
 import static cl.exercise.user.security.JWTConstants.HEADER_STRING;
-import static cl.exercise.user.security.JWTConstants.SECRET_PASSWORD;
 import static cl.exercise.user.security.JWTConstants.TOKEN_PREFIX;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
@@ -21,11 +20,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+  private final String secretPassword;
   private final AuthenticationManager authenticationManager;
 
-  public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+  public JWTAuthenticationFilter(AuthenticationManager authenticationManager, String secretPassword) {
+    this.secretPassword = secretPassword;
     this.authenticationManager = authenticationManager;
     setFilterProcessesUrl("/authenticate");
   }
@@ -49,7 +50,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         JWT.create()
             .withSubject(auth.getPrincipal().toString())
             .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .sign(HMAC512(SECRET_PASSWORD.getBytes()));
+            .sign(HMAC512(this.secretPassword.getBytes()));
 
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode result = mapper.createObjectNode();

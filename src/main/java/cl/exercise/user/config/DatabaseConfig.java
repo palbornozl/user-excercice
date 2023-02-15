@@ -1,13 +1,8 @@
 package cl.exercise.user.config;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Properties;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -28,25 +23,16 @@ import org.springframework.transaction.PlatformTransactionManager;
     entityManagerFactoryRef = "userEntityManager",
     transactionManagerRef = "transactionManagerUser")
 public class DatabaseConfig {
-
-  @Autowired private Environment env;
-
   public DatabaseConfig() {
     super();
   }
 
-  private static String getPropertyAsString(Properties prop) {
-    StringWriter writer = new StringWriter();
-    prop.list(new PrintWriter(writer));
-    return writer.getBuffer().toString();
-  }
-
   @Bean
-  public LocalContainerEntityManagerFactoryBean userEntityManager() throws SQLException {
+  public LocalContainerEntityManagerFactoryBean userEntityManager(Environment env) {
 
     final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-    final HashMap<String, Object> properties = new HashMap<String, Object>();
+    final HashMap<String, Object> properties = new HashMap<>();
 
     properties.put("hibernate.dialect", env.getProperty("db.user.dialect"));
 
@@ -54,11 +40,6 @@ public class DatabaseConfig {
     em.setPackagesToScan("cl.exercise.user.entities");
     em.setJpaVendorAdapter(vendorAdapter);
     em.setJpaPropertyMap(properties);
-
-    log.info("userConfig...");
-    log.info("--> env db {}", em.getDataSource().getConnection());
-    log.info("--> jpa db {}", em.getJpaPropertyMap());
-    log.info("--> vendor db {}", em.getJpaVendorAdapter().toString());
 
     return em;
   }
@@ -70,9 +51,9 @@ public class DatabaseConfig {
   }
 
   @Bean(name = "transactionManagerUser")
-  public PlatformTransactionManager userTransactionManager() throws SQLException {
+  public PlatformTransactionManager userTransactionManager(Environment env) {
     final JpaTransactionManager transactionManagerUser = new JpaTransactionManager();
-    transactionManagerUser.setEntityManagerFactory(userEntityManager().getObject());
+    transactionManagerUser.setEntityManagerFactory(userEntityManager(env).getObject());
     return transactionManagerUser;
   }
 }

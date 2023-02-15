@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserEmailValidator implements ConstraintValidator<UserEmailConstraint, String> {
 
   @Override
-  public void initialize(UserEmailConstraint userEmailConstraint) {}
+  public void initialize(UserEmailConstraint userEmailConstraint) {
+    // nothing to do here...
+  }
 
   @Override
   @SneakyThrows

@@ -4,6 +4,7 @@ import static cl.exercise.user.security.JWTConstants.SIGN_UP_URL;
 
 import cl.exercise.user.repository.UserRepository;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,6 +19,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
+
+  @Value("${vault.my.secret}")
+  private final String secretPassword;
   private final UserRepository userRepository;
 
   private final UserDetailsServiceImpl userDetailsService;
@@ -31,6 +35,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     this.userRepository = userRepository;
     this.userDetailsService = userDetailsService;
     this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    secretPassword = null;
   }
 
   @SneakyThrows
@@ -48,8 +53,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         .antMatchers("/user/in/**")
         .authenticated()
         .and()
-        .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-        .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+        .addFilter(new JWTAuthenticationFilter(authenticationManager(), secretPassword))
+        .addFilter(new JWTAuthorizationFilter(authenticationManager(), secretPassword))
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     http.headers().frameOptions().disable();
