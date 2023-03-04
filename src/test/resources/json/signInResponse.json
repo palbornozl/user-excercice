@@ -1,0 +1,18 @@
+{
+  "phones": [
+    {
+      "number": 1234567,
+      "citycode": 7,
+      "countrycode": 7
+    },
+    {
+      "number": 999999999,
+      "citycode": 56,
+      "countrycode": 56
+    }
+  ],
+  "name": "Juan Rodriguez",
+  "email": "juan@rodriguezorg.cl",
+  "password": "ssT4S@Aww4",
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3Vlem9yZy5jbCIsImV4cCI6MTYwMTc3OTUwNX0.5Lm353B6_9rpgNd19am7lky9WMcmvDtictPlbWmcvJcUoGD7nQik-Dz_uXb_ymnVq_F7Z_2BV8GmXitQUotEcQ"
+}
