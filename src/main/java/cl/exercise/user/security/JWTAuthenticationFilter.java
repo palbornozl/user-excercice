@@ -1,64 +1,82 @@
 package cl.exercise.user.security;
 
-import static cl.exercise.user.security.JWTConstants.EXPIRATION_TIME;
-import static cl.exercise.user.security.JWTConstants.HEADER_STRING;
-import static cl.exercise.user.security.JWTConstants.TOKEN_PREFIX;
-import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-
-import cl.exercise.user.dto.UserDTO;
-import com.auth0.jwt.JWT;
+import cl.exercise.user.dto.UserRequestDTO;
+import cl.exercise.user.dto.UserResponseDTO;
+import cl.exercise.user.repository.UserRepository;
+import cl.exercise.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.ArrayList;
-import java.util.Date;
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 
+import static cl.exercise.user.security.JWTConstants.HEADER_AUTHORIZATION;
+import static cl.exercise.user.security.JWTConstants.TOKEN_PREFIX;
+
+@Slf4j
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-  private final String secretPassword;
-  private final AuthenticationManager authenticationManager;
 
-  public JWTAuthenticationFilter(AuthenticationManager authenticationManager, String secretPassword) {
-    this.secretPassword = secretPassword;
-    this.authenticationManager = authenticationManager;
-    setFilterProcessesUrl("/authenticate");
-  }
+    private final TokenUtils tokenUtils;
+    private final UserService service;
+    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
 
-  @Override
-  @SneakyThrows
-  public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) {
-    UserDTO creds = new ObjectMapper().readValue(req.getInputStream(), UserDTO.class);
+    public JWTAuthenticationFilter(TokenUtils tokenUtils, UserService service, AuthenticationManager authenticationManager, UserRepository userRepository) {
+        this.tokenUtils = tokenUtils;
+        this.service = service;
+        this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        setFilterProcessesUrl("/authenticate");
+        log.info("calling login...");
+    }
 
-    return authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            creds.getUserEmail(), creds.getUserPassword(), new ArrayList<>()));
-  }
+    @Override
+    @SneakyThrows
+    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) {
+        log.info("--- attemptAuthentication");
+        UserRequestDTO userRequestDTO = new ObjectMapper().readValue(req.getReader(), UserRequestDTO.class);
 
-  @Override
-  @SneakyThrows
-  protected void successfulAuthentication(
-      HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                userRequestDTO.getUserEmail(),
+                userRequestDTO.getUserPassword(),
+                Collections.emptyList()
+        );
 
-    String token =
-        JWT.create()
-            .withSubject(auth.getPrincipal().toString())
-            .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .sign(HMAC512(this.secretPassword.getBytes()));
+        return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+    }
 
-    ObjectMapper mapper = new ObjectMapper();
-    ObjectNode result = mapper.createObjectNode();
-    result.put("user", auth.getPrincipal().toString());
-    result.put("token", token);
+    @Override
+    @SneakyThrows
+    protected void successfulAuthentication(
+            HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
+        log.info("--- successfulAuthentication");
+        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+        String token = tokenUtils.createToken(userDetails);
 
-    res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-    res.getWriter().write(result.toPrettyString());
-    res.getWriter().flush();
-  }
+        res.addHeader(HEADER_AUTHORIZATION, TOKEN_PREFIX + token);
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
+
+        UserResponseDTO response = getUserResponseDTO(userDetails, token);
+        res.getOutputStream().print(new ObjectMapper().writeValueAsString(response));
+        res.flushBuffer();
+
+        super.successfulAuthentication(req, res, chain, auth);
+    }
+
+    private UserResponseDTO getUserResponseDTO(UserDetailsImpl userDetails, String token) {
+        userRepository.updateUserLastLogin(userDetails.getId(), token);
+        UserRequestDTO request = UserRequestDTO.builder()
+                .userEmail(userDetails.getUsername())
+                .userPassword(userDetails.getPassword())
+                .build();
+        return service.getUserInformation(request);
+    }
 }

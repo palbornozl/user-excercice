@@ -3,7 +3,7 @@ package cl.exercise.user.service;
 import static cl.exercise.user.utils.Utils.readFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cl.exercise.user.dto.UserDTO;
+import cl.exercise.user.dto.UserRequestDTO;
 import cl.exercise.user.entities.UserEntity;
 import cl.exercise.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,7 +27,7 @@ public class UserServiceTest {
 
   @Mock UserRepository mockRepository;
   File file;
-  private UserDTO userDTOSignUpRequest;
+  private UserRequestDTO UserRequestDTOSignUpRequest;
   private UUID userId;
   private UserEntity userEntityResponse;
 
@@ -37,8 +37,7 @@ public class UserServiceTest {
     JsonNode jsonNode;
 
     jsonNode = readFile("signUpRequest", classLoader);
-    userDTOSignUpRequest = new ObjectMapper().readValue(jsonNode.toPrettyString(), UserDTO.class);
-    userDTOSignUpRequest.setUserToken(jsonNode.get("password").asText());
+    UserRequestDTOSignUpRequest = new ObjectMapper().readValue(jsonNode.toPrettyString(), UserRequestDTO.class);
 
     jsonNode = readFile("userEntityResponse", classLoader);
     userEntityResponse = new ObjectMapper().readValue(jsonNode.toPrettyString(), UserEntity.class);
@@ -51,10 +50,9 @@ public class UserServiceTest {
 
     UserEntity userEntity =
         UserEntity.builder()
-            .email(userDTOSignUpRequest.getUserEmail())
-            .name(userDTOSignUpRequest.getUserName())
-            .password(userDTOSignUpRequest.getUserPassword())
-            .token(userDTOSignUpRequest.getUserToken())
+            .email(UserRequestDTOSignUpRequest.getUserEmail())
+            .name(UserRequestDTOSignUpRequest.getUserName())
+            .password(UserRequestDTOSignUpRequest.getUserPassword())
             .isActive(true)
             .build();
 

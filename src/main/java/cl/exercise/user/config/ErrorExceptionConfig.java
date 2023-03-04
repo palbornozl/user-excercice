@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ErrorExceptionConfig {
-  @Bean
-  public GlobalExceptionHandler getExceptionHandler() {
-    return new GlobalExceptionHandler();
-  }
+    @Bean
+    public GlobalExceptionHandler getExceptionHandler() {
+        return new GlobalExceptionHandler();
+    }
 }

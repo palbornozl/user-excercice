@@ -1,24 +1,23 @@
 package cl.exercise.user.controller;
 
-import static cl.exercise.user.security.JWTConstants.HEADER_STRING;
-import static cl.exercise.user.security.JWTConstants.TOKEN_PREFIX;
-
-import cl.exercise.user.dto.UserDTO;
-import cl.exercise.user.dto.UserResponse;
+import cl.exercise.user.dto.UserLoginDTO;
+import cl.exercise.user.dto.UserRequestDTO;
+import cl.exercise.user.dto.UserResponseDTO;
+import cl.exercise.user.security.TokenUtils;
 import cl.exercise.user.service.UserService;
-import javax.validation.Valid;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+import static cl.exercise.user.security.JWTConstants.HEADER_AUTHORIZATION;
+import static cl.exercise.user.security.JWTConstants.TOKEN_PREFIX;
+import static cl.exercise.user.transformer.Transformer.userLoginTouserRequest;
 
 @RestController
 @Slf4j
@@ -26,70 +25,77 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional(transactionManager = "transactionManagerUser")
 public class UserController {
 
-  public static final String RESPONSE_RESULTS_STG = "Response results: {}";
-  public static final String ERROR_STG = "[Error] ";
-  private final UserService service;
+    public static final String RESPONSE_RESULTS_STG = "Response results: {}";
+    public static final String ERROR_STG = "[Error] ";
 
-  public UserController(UserService service) {
-    this.service = service;
-  }
+    private final TokenUtils tokenUtils;
+    private final UserService service;
 
-  @SneakyThrows
-  @PostMapping("/sign-up")
-  public ResponseEntity<UserResponse> signUp(
-      @Valid @RequestBody UserDTO request, BindingResult result) {
-    if (result.hasErrors()) {
-      log.error("Validation problems [sign-up]... {}", result.getAllErrors());
-      throw new IllegalArgumentException(
-          ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
+    public UserController(TokenUtils tokenUtils, UserService service) {
+        this.tokenUtils = tokenUtils;
+        this.service = service;
     }
 
-    if (service.findUserByEmail(request.getUserEmail()) != null) {
-      throw new IllegalArgumentException("[Error] El correo ya está registrado");
+    @SneakyThrows
+    @PostMapping("/sign-up")
+    public ResponseEntity<UserResponseDTO> signUp(
+            @Valid @RequestBody UserRequestDTO request, BindingResult result) {
+        if (result.hasErrors()) {
+            log.error("Validation problems [sign-up]... {}", result.getAllErrors());
+            throw new IllegalArgumentException(
+                    ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
+        }
+
+        if (service.isEmailExists(request.getUserEmail())) {
+            throw new IllegalArgumentException("[Error] El correo ya está registrado");
+        }
+
+        UserResponseDTO response = service.saveUser(request);
+        log.debug(RESPONSE_RESULTS_STG, response.toString());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    request.setUserToken(request.getUserPassword());
-    UserResponse response = service.saveUser(request);
-    log.debug(RESPONSE_RESULTS_STG, response.toString());
+    @SneakyThrows
+    @PostMapping("/authenticate")
+    public ResponseEntity<UserResponseDTO> login(
+            @Valid @RequestBody UserLoginDTO request, BindingResult result) {
+        if (result.hasErrors()) {
+            log.error("Validation problems [sign-up]... {}", result.getAllErrors());
+            throw new IllegalArgumentException(
+                    ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
+        }
 
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+        UserResponseDTO response = service.getUserInformation(userLoginTouserRequest(request));
+        log.debug(RESPONSE_RESULTS_STG, response.toString());
 
-  @SneakyThrows
-  @PostMapping("/in/sign-in")
-  public ResponseEntity<UserDTO> login(
-      @Valid @RequestBody UserDTO request,
-      BindingResult result,
-      @RequestHeader(value = HEADER_STRING) String token) {
-    if (result.hasErrors()) {
-      log.error("Validation problems [sign-in]... {}", result.getAllErrors());
-      throw new IllegalArgumentException(
-          ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    request.setUserToken(token.replace(TOKEN_PREFIX, "").trim());
-    UserDTO response = service.getUserInformation(request);
-    log.debug(RESPONSE_RESULTS_STG, response.toString());
+    @SneakyThrows
+    @GetMapping("/in/get")
+    public ResponseEntity<UserResponseDTO> getInfo(@RequestHeader(value = HEADER_AUTHORIZATION) String token) {
+        UserResponseDTO response = service.getUserCompleteInformation(tokenUtils.decodeToken(token));
+        log.debug(RESPONSE_RESULTS_STG, response.toString());
 
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
-
-  @SneakyThrows
-  @PutMapping("/in/update")
-  public ResponseEntity<UserResponse> update(
-      @Valid @RequestBody UserDTO request,
-      BindingResult result,
-      @RequestHeader(value = HEADER_STRING) String token) {
-    if (result.hasErrors()) {
-      log.error("Validation problems [update]... {}", result.getAllErrors());
-      throw new IllegalArgumentException(
-          ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    request.setUserToken(token.replace(TOKEN_PREFIX, "").trim());
-    UserResponse response = service.updateUser(request);
-    log.debug(RESPONSE_RESULTS_STG, response.toString());
+    @SneakyThrows
+    @PutMapping("/in/update")
+    public ResponseEntity<UserResponseDTO> update(
+            @Valid @RequestBody UserRequestDTO request,
+            BindingResult result,
+            @RequestHeader(value = HEADER_AUTHORIZATION) String token) {
+        if (result.hasErrors()) {
+            log.error("Validation problems [update]... {}", result.getAllErrors());
+            throw new IllegalArgumentException(
+                    ERROR_STG + result.getAllErrors().get(0).getDefaultMessage());
+        }
 
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+        UserResponseDTO response = service.updateUser(request, token.replace(TOKEN_PREFIX, "").trim());
+        log.debug(RESPONSE_RESULTS_STG, response.toString());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

@@ -1,8 +1,8 @@
 # user-excercise
 
-- Java jdk1.8.0_265
-- Gradle 6.6.1
-- Docker Engine v19.03.13
+- Java AdoptOpenJDK\jdk8u282-b08
+- Gradle gradle-6.9.4
+- Spring boot 2.6.14
 
 #### Diagramas
 En carpeta diagrams:
@@ -16,30 +16,30 @@ El resultado es almacenado en una base de datos relacional embebida (H2), cuya t
 *Schema*: exercise
 *Tabla*: tbl_user
 
-|nombre campo|observaciones
+|nombre campo|observaciones|
 |---|---|
-|id         |uuid         not null DEFAULT RANDOM_UUID() primary key
-|name       |varchar(250) not null
-|email      |varchar(100) not null
-|password   |varchar(16)  not null
-|token      |varchar(200) not null
-|is_active  |boolean      default true
-|created_at |timestamp    
-|updated_at |timestamp    
-|modified   |timestamp    
+|id         |uuid primary key|
+|name       |varchar(250) not null|
+|email      |varchar(100) not null|
+|password   |varchar(16)  not null|
+|token      |varchar(200) not null|
+|is_active  |boolean      default true|
+|created_at |timestamp|    
+|updated_at |timestamp|    
+|modified   |timestamp|    
 
 *Schema*: exercise
 *Tabla*: user_phone
 
 |nombre campo| observaciones|
 |---|---|
-|id           | uuid primary key,
-|id_user      | uuid      not null,
-|phone_number | integer   not null,
-|city_code    | integer   not null,
-|country_code | integer   not null,
-|created_at   | timestamp not null default current_timestamp(),
-|updated_at   | timestamp not null default current_timestamp(),
+|id           | uuid primary key|
+|id_user      | uuid      not null|
+|phone_number | integer   not null|
+|city_code    | integer   not null|
+|country_code | integer   not null|
+|created_at   | timestamp not null default current_timestamp()|
+|updated_at   | timestamp not null default current_timestamp()|
 *FOREIGN KEY (id_user) REFERENCES EXERCICE.TBL_USER (id)*
 
 #### Acceso a BD
@@ -49,6 +49,17 @@ Vía browser http://localhost:8099/user/h2-console
 - Password: `password`
 
 ### Ejecución
+
+#### Variables de ambiente
+* DB_DIALECT=H2Dialect
+* DB_DRIVER=org.h2.Driver
+* DB_PASSWORD=password
+* DB_URL=jdbc:h2:mem:exercise
+* DB_USER=sa
+* LOG_LEVEL=INFO
+* LOG_LEVEL_SQL=INFO
+
+Las variables están en el archivo .env
 
 #### Docker
 Ejecutar comando: 
@@ -61,17 +72,24 @@ source .env
 gradle clean build bootRun
 ```
 
-#### Rest Client
-- Importar archivo restClientUser.json a un cliente Rest (Insomnia / Postman)
-- Ejecutar sig-up
-- Ejecutar login y copiar token de la respuesta
-- Cambiar token en Authorization en Header
-- Ejecutar sign-in o update 
+#### Documentación API
+
+Para la ejecución el flujo es el siguiente:
+- Sign-up para el registro de nuevo usuario, por defecto no hay ningún usuario en la BD.
+- Ejecutar login para obtener token de la respuesta
+- Ejecutar update o get se debe agregar token Bearer en Authorization en Header
+
+Puede utilizar Swagger (http://localhost:8098/user/swagger-ui/index.html) 
+o un cliente API Rest como Postman o Insomnia
 
 #### Contratos
 ##### IN
-- Obligatorios: name, email, password
+###### Endpoint sign-up / update
+- Obligatorios: email, password
 - Opcional: phones *en caso de enviarlo todos los campos son obligatorios*
+- Validaciones: configurables en el archivo application.properties
+  - email: formato email correcto user@micompania.com
+  - contraseña: minimo 1 letra mayuscula, minusculas, 2 numeros, 1 un simbolo [@#$%^&-+=()]
 ```json
 {
   "name": "Juan Rodriguez",
@@ -86,45 +104,65 @@ gradle clean build bootRun
   ]
 }
 ```
-
-##### OUT
-###### Endpoint sign-in / update
+###### Endpoint login
 ```json
 {
-  "id": "ba9ac26d-af97-46f4-a4ec-711a99bc4e04",
+	"email": "juan@rodriguezdorg.cl",
+	"password": "2A@aaa3to"
+}
+```
+##### OUT
+###### Endpoint sign-up (token es el password encriptado)
+````json
+{
+	"id": "0ea86112-7439-4706-a13b-a6827eeac747",
+	"isactive": true,
+	"token": "$2a$10$jOaQ5c.YwOEIoQrlkGF9/ukDdPlwnuaypCERB7O95kztMSh9VscIS",
+	"created": "sábado, marzo 04, 2023 01:46:06.777 PM",
+	"modified": "sábado, marzo 04, 2023 01:46:06.777 PM",
+	"last_login": "sábado, marzo 04, 2023 01:46:06.777 PM"
+}
+````
+###### Endpoint sign-up / update
+```json
+{
+  "id": "ba39e9a6-f88d-4a59-adbb-eeb448ba0ca7",
   "isactive": true,
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3Vlem9yZy5jbCIsImV4cCI6MTYwMTc3OTUwNX0.5Lm353B6_9rpgNd19am7lky9WMcmvDtictPlbWmcvJcUoGD7nQik-Dz_uXb_ymnVq_F7Z_2BV8GmXitQUotEcQ",
-  "created": "sábado, octubre 03, 2020 11:29:59.383 PM",
-  "modified": "sábado, octubre 03, 2020 11:30:52.252 PM",
-  "last_login": "sábado, octubre 03, 2020 11:30:05.316 PM"
+  "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3VlemRvcmcuY2wiLCJleHAiOjE2ODA1Mzk0NTcsInBhc3N3b3JkIjoiJDJhJDEwJGR4eFpGMmp1ekhGazlFeU1KSEouT092ZDRucmpaT25uWlNnUkZnZzh4aUJDcDh2WjNSd1R1IiwidXNlck5hbWUiOiJKdWFuIFJvZHJpZ3VleiIsInVzZXJDb2RlIjoiYmEzOWU5YTYtZjg4ZC00YTU5LWFkYmItZWViNDQ4YmEwY2E3In0.Oo_fGY88TthJpOjmKrz-JPmahWVjFAVmZkolrEtLnwlgptzCeQAO5L4iVvtih5Qx",
+  "created": "sábado, marzo 04, 2023 01:30:53.640 PM",
+  "modified": "sábado, marzo 04, 2023 01:31:27.908 PM",
+  "last_login": "sábado, marzo 04, 2023 01:30:57.499 PM"
 }
 ```
 ###### Endpoint login
 ```json
 {
-  "user": "juan@rodriguezorg.cl",
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3Vlem9yZy5jbCIsImV4cCI6MTYwMTc3OTUwNX0.5Lm353B6_9rpgNd19am7lky9WMcmvDtictPlbWmcvJcUoGD7nQik-Dz_uXb_ymnVq_F7Z_2BV8GmXitQUotEcQ"
+  "id": "0ea86112-7439-4706-a13b-a6827eeac747",
+  "isactive": true,
+  "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3VlemRvcmcuY2wiLCJleHAiOjE2ODA1NDAzNzIsInBhc3N3b3JkIjoiJDJhJDEwJHY1YS5sUFR2L04zRktpZlA5Lk1rQS4zRDh2L0txVXJpbGxDMjJodjZDQ0RlNDcxaklFSmNpIiwidXNlck5hbWUiOiJKdWFuIFJvZHJpZ3VleiIsInVzZXJDb2RlIjoiMGVhODYxMTItNzQzOS00NzA2LWExM2ItYTY4MjdlZWFjNzQ3In0.TGYc_WiOjYsterVllSUWatHUZjiKthj6ftzrbVD6gcBonbvqa1pvuY9Tt0U2mq_Z",
+  "created": "sábado, marzo 04, 2023 01:46:06.777 PM",
+  "modified": "sábado, marzo 04, 2023 01:46:06.777 PM",
+  "last_login": "sábado, marzo 04, 2023 01:46:12.121 PM"
 }
 ```
-###### Endpoint sign-in
+###### Endpoint get
 ```json
 {
   "phones": [
     {
       "number": 1234567,
-      "citycode": 7,
-      "countrycode": 7
-    },
-    {
-      "number": 999999999,
-      "citycode": 56,
-      "countrycode": 56
+      "citycode": 57,
+      "countrycode": 57
     }
   ],
+  "id": "0ea86112-7439-4706-a13b-a6827eeac747",
+  "isactive": true,
+  "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3VlemRvcmcuY2wiLCJleHAiOjE2ODA1NDAzNzIsInBhc3N3b3JkIjoiJDJhJDEwJHY1YS5sUFR2L04zRktpZlA5Lk1rQS4zRDh2L0txVXJpbGxDMjJodjZDQ0RlNDcxaklFSmNpIiwidXNlck5hbWUiOiJKdWFuIFJvZHJpZ3VleiIsInVzZXJDb2RlIjoiMGVhODYxMTItNzQzOS00NzA2LWExM2ItYTY4MjdlZWFjNzQ3In0.TGYc_WiOjYsterVllSUWatHUZjiKthj6ftzrbVD6gcBonbvqa1pvuY9Tt0U2mq_Z",
+  "created": "sábado, marzo 04, 2023 01:46:06.777 PM",
+  "modified": "sábado, marzo 04, 2023 01:46:06.777 PM",
+  "last_login": "sábado, marzo 04, 2023 01:46:12.121 PM",
   "name": "Juan Rodriguez",
-  "email": "juan@rodriguezorg.cl",
-  "password": "ssT4S@Aww4",
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3Vlem9yZy5jbCIsImV4cCI6MTYwMTc3OTUwNX0.5Lm353B6_9rpgNd19am7lky9WMcmvDtictPlbWmcvJcUoGD7nQik-Dz_uXb_ymnVq_F7Z_2BV8GmXitQUotEcQ"
+  "email": "juan@rodriguezdorg.cl"
 }
 ```
 

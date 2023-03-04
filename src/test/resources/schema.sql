@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS EXERCISE.TBL_USER
     id         uuid         not null DEFAULT RANDOM_UUID() primary key,
     name       varchar(250) not null,
     email      varchar(100) not null,
-    password   varchar(16)  not null,
+    password   text  not null,
     token      text         not null,
     is_active  boolean               default true,
     created_at timestamp,
