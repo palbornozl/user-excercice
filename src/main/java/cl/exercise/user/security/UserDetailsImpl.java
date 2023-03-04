@@ -11,10 +11,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
-
     UserEntity userEntity;
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();

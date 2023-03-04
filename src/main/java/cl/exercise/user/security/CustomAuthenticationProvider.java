@@ -28,12 +28,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @SneakyThrows
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.info("--- authenticate ");
+        log.debug("--- authenticate ");
         String userName = authentication.getPrincipal().toString();
         String password = authentication.getCredentials().toString();
 
         UserEntity userEntity = userRepository.findByEmail(userName).orElseThrow(() -> new UsernameNotFoundException(userName));
-        log.info("Checking user password");
+        log.debug("Checking user password");
 
         if (passwordEncoder.matches(password, userEntity.getPassword())) {
             return new UsernamePasswordAuthenticationToken(

@@ -35,7 +35,7 @@ public class TokenUtils {
 
     @SneakyThrows
     public String createToken(UserDetailsImpl userDetails) {
-        log.info("---> accessTokenValiditySeconds");
+        log.debug("--- accessTokenValiditySeconds");
         convertTimeValityToLong();
         long expirationTime = accessTokenValiditySeconds * 1_000;
         Date expirationDate = new Date(System.currentTimeMillis() + expirationTime);

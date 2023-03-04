@@ -34,13 +34,13 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         setFilterProcessesUrl("/authenticate");
-        log.info("calling login...");
+        log.debug("calling login...");
     }
 
     @Override
     @SneakyThrows
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) {
-        log.info("--- attemptAuthentication");
+        log.debug("--- attemptAuthentication");
         UserRequestDTO userRequestDTO = new ObjectMapper().readValue(req.getReader(), UserRequestDTO.class);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
@@ -56,7 +56,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @SneakyThrows
     protected void successfulAuthentication(
             HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
-        log.info("--- successfulAuthentication");
+        log.debug("--- successfulAuthentication");
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         String token = tokenUtils.createToken(userDetails);
 

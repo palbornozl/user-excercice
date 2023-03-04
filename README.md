@@ -64,12 +64,16 @@ Las variables están en el archivo .env
 #### Docker
 Ejecutar comando: 
 
-`docker-compose -f docker-compose.yml up -d --build`
+```shell script
+docker-compose build
+docker-compose up
+```
 
 #### Gradle
 ```shell script
 source .env
-gradle clean build bootRun
+gradlew clean build -x test #-x test: es opcional para excluir test unitarios
+gradlew bootRun
 ```
 
 #### Documentación API
