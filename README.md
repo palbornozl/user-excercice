@@ -65,8 +65,9 @@ Las variables están en el archivo .env
 Ejecutar comando: 
 
 ```shell script
-docker-compose build
-docker-compose up
+docker compose build #construir 
+docker compose up # puede usar start
+docker compose stop # detener contenedor
 ```
 
 #### Gradle
