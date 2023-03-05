@@ -21,7 +21,7 @@ public class UserResponseDTO {
     @JsonProperty("id")
     private String userId;
     @JsonProperty("isactive")
-    private boolean isActive;
+    private Boolean isActive;
     @JsonProperty("token")
     private String userToken;
     @JsonProperty("created")

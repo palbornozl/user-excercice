@@ -1,0 +1,11 @@
+{
+  "id": "c8a222b6-503e-4428-a705-d1d7d81808d0",
+  "name": "Juan Rodriguez",
+  "email": "juan@rodriguezdorg.cl",
+  "password": "$2a$10$yfTFP.8H81MVJFe0mtkKlun4gu11IhYSyIf2Z33w7UcTk1uUnku8e",
+  "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3VlemRvcmcuY2wiLCJleHAiOjE2ODA1NjQ5OTIsInBhc3N3b3JkIjoiJDJhJDEwJHlmVEZQLjhIODFNVkpGZTBtdGtLbHVuNGd1MTFJaFlTeUlmMlozM3c3VWNUazF1VW5rdThlIiwidXNlck5hbWUiOiJKdWFuIFJvZHJpZ3VleiIsInVzZXJDb2RlIjoiYzhhMjIyYjYtNTAzZS00NDI4LWE3MDUtZDFkN2Q4MTgwOGQwIn0.clN4i0X0lV5NSGPlwZSJKHsWDtpTtbZneFaL3ONzmzTf8UB8yB6c42lN_5YV9Yos",
+  "isActive": true,
+  "createdAt": 1677972943592,
+  "modifiedAt": 1677972943592,
+  "lastLogin": 1677972992682
+}

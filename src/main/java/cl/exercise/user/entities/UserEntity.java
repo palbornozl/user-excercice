@@ -47,7 +47,7 @@ public class UserEntity implements Serializable {
     private String token;
 
     @Column(name = "is_active")
-    private boolean isActive;
+    private Boolean isActive;
 
     @Column(name = "created_at", updatable = false, nullable = false)
     private Timestamp createdAt;

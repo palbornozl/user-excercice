@@ -1,0 +1,17 @@
+{
+  "phones": [
+    {
+      "number": 1234567,
+      "citycode": 57,
+      "countrycode": 57
+    }
+  ],
+  "id": "c8a222b6-503e-4428-a705-d1d7d81808d0",
+  "isactive": true,
+  "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqdWFuQHJvZHJpZ3VlemRvcmcuY2wiLCJleHAiOjE2ODA1NjQ5OTIsInBhc3N3b3JkIjoiJDJhJDEwJHlmVEZQLjhIODFNVkpGZTBtdGtLbHVuNGd1MTFJaFlTeUlmMlozM3c3VWNUazF1VW5rdThlIiwidXNlck5hbWUiOiJKdWFuIFJvZHJpZ3VleiIsInVzZXJDb2RlIjoiYzhhMjIyYjYtNTAzZS00NDI4LWE3MDUtZDFkN2Q4MTgwOGQwIn0.clN4i0X0lV5NSGPlwZSJKHsWDtpTtbZneFaL3ONzmzTf8UB8yB6c42lN_5YV9Yos",
+  "created": "sábado, marzo 04, 2023 08:35:43.592 PM",
+  "modified": "sábado, marzo 04, 2023 08:35:43.592 PM",
+  "last_login": "sábado, marzo 04, 2023 08:36:32.682 PM",
+  "name": "Juan Rodriguez",
+  "email": "juan@rodriguezdorg.cl"
+}

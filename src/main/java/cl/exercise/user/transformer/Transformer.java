@@ -44,7 +44,7 @@ public class Transformer {
                 .createdAt(getDateFormatCompleteToString(new Date(userEntity.getCreatedAt().getTime())))
                 .modifiedAt(getDateFormatCompleteToString(new Date(userEntity.getModifiedAt().getTime())))
                 .lastLogin(getDateFormatCompleteToString(new Date(userEntity.getLastLogin().getTime())))
-                .isActive(userEntity.isActive())
+                .isActive(userEntity.getIsActive())
                 .userToken(userEntity.getToken())
                 .build();
     }

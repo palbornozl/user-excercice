@@ -7,6 +7,7 @@ import cl.exercise.user.entities.UserEntity;
 import cl.exercise.user.entities.UserPhoneEntity;
 import cl.exercise.user.repository.UserPhoneRepository;
 import cl.exercise.user.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,25 +45,27 @@ public class UserService {
 
     @SneakyThrows
     public UserResponseDTO saveUser(UserRequestDTO request) {
-        log.info("--> saving user {}", request.toString());
+        request.setUserPassword(passwordEncoder.encode(request.getUserPassword()));
+        log.debug("--> saving user {}", request.toString());
 
         UUID userId =
                 saveUserInfo(
                         UserEntity.builder()
                                 .email(request.getUserEmail())
                                 .name(request.getUserName())
-                                .password(passwordEncoder.encode(request.getUserPassword()))
-                                .token(passwordEncoder.encode(request.getUserPassword()))
+                                .password(request.getUserPassword())
+                                .token(request.getUserPassword())
                                 .isActive(true)
                                 .build());
 
         if (!CollectionUtils.isEmpty(request.getUserPhoneDTO())) {
-            log.info("--> saving phone {}", request.getUserPhoneDTO().toString());
+            log.debug("--> saving phone {}", request.getUserPhoneDTO().toString());
             saveUserPhoneInfo(request.getUserPhoneDTO(), userId);
         }
 
-        Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
-        UserEntity userEntity = userEntityOptional.orElseThrow(NullPointerException::new);
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(NullPointerException::new);
+        log.debug("{}", new ObjectMapper().writeValueAsString(userEntity));
+
         return generateResponse(userEntity);
     }
 
@@ -73,11 +76,13 @@ public class UserService {
 
     @SneakyThrows
     public UserResponseDTO getUserCompleteInformation(String email) {
-        log.info("--> getting user info {}", email);
+        log.debug("--> getting user info {}", email);
         UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
+        log.debug("{}", new ObjectMapper().writeValueAsString(userEntity));
 
         List<UserPhoneEntity> userPhoneEntity = userPhoneRepository.findByIdUser(userEntity.getId());
+        log.debug("{}", new ObjectMapper().writeValueAsString(userPhoneEntity));
 
         UserResponseDTO responseDTO = userEntityToResponse(userEntity);
 
@@ -93,7 +98,7 @@ public class UserService {
     }
 
     public UserResponseDTO updateUser(UserRequestDTO request, String token) {
-        log.info("--> update user {}", request.toString());
+        log.debug("--> update user {}", request.toString());
         UserEntity userEntity = userRepository.findByEmail(request.getUserEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(request.getUserEmail()));
 
@@ -107,11 +112,11 @@ public class UserService {
 
         List<UserPhoneEntity> phoneEntities = userPhoneRepository.findByIdUser(userEntity.getId());
         if (!CollectionUtils.isEmpty(phoneEntities)) {
-            log.info("--> delete phone {}", phoneEntities);
+            log.debug("--> delete phone {}", phoneEntities);
             userPhoneRepository.deleteByIdUser(userEntity.getId());
         }
         if (!CollectionUtils.isEmpty(request.getUserPhoneDTO())) {
-            log.info("--> saving phone {}", request.getUserPhoneDTO().toString());
+            log.debug("--> saving phone {}", request.getUserPhoneDTO().toString());
             saveUserPhoneInfo(request.getUserPhoneDTO(), userEntity.getId());
         }
         UserEntity userEntityOptional = userRepository.findById(userEntity.getId())
@@ -137,7 +142,7 @@ public class UserService {
     }
 
     private UserResponseDTO generateResponse(UserEntity userEntity) {
-        log.info("creating response...");
+        log.debug("creating response...");
         return userEntityToResponse(userEntity);
     }
 }
