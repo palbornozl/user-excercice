@@ -62,19 +62,17 @@ Vía browser http://localhost:8099/user/h2-console
 Las variables están en el archivo .env
 
 #### Docker
-Ejecutar comando: 
+Ejecutar comando:
+```shell script
+docker build -t user-exercice:user .
+docker run --env-file=.env -p 8098:8098 user-exercice:user
+```
 
+##### docker compose
 ```shell script
 docker compose build #construir 
 docker compose up # puede usar start
 docker compose stop # detener contenedor
-```
-
-#### Gradle
-```shell script
-source .env
-gradlew clean build -x test #-x test: es opcional para excluir test unitarios
-gradlew bootRun
 ```
 
 #### Documentación API

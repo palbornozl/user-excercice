@@ -1,8 +1,11 @@
 {
-  "id": "ba9ac26d-af97-46f4-a4ec-711a99bc4e04",
-  "isactive": true,
-  "token": "ssT4S@Aww4",
-  "created": "sábado, octubre 03, 2020 11:29:59.383 PM",
-  "modified": "sábado, octubre 03, 2020 11:29:59.383 PM",
-  "last_login": "sábado, octubre 03, 2020 11:29:59.383 PM"
+  "id": "275d2e63-978f-43bb-a740-e5fbf1cd55b0",
+  "name": "Juan Rodriguez",
+  "email": "juan@rodriguezdorg.cl",
+  "password": "$2a$10$yfTFP.8H81MVJFe0mtkKlun4gu11IhYSyIf2Z33w7UcTk1uUnku8e",
+  "token": "$2a$10$yfTFP.8H81MVJFe0mtkKlun4gu11IhYSyIf2Z33w7UcTk1uUnku8e",
+  "isActive": true,
+  "createdAt": 1677972943592,
+  "modifiedAt": 1677972943592,
+  "lastLogin": 1677972943592
 }

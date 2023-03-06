@@ -44,7 +44,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return userEntity.isActive();
+        return userEntity.getIsActive();
     }
 
     public String getName() {
